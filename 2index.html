@@ -1,0 +1,429 @@
+<!DOCTYPE html><html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ระบบห้องสมุดโรงเรียน</title>
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- html5-qrcode for mobile camera QR scanning -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    /* ตัวช่วยไฮไลต์สีธีมห้องสมุด: เขียว น้ำเงิน ม่วง */
+    :root{
+      --lib-green:#10b981; /* emerald-500 */
+      --lib-blue:#3b82f6;  /* blue-500 */
+      --lib-purple:#8b5cf6;/* violet-500 */
+    }
+    .grad {
+      background: linear-gradient(135deg,var(--lib-green),var(--lib-blue),var(--lib-purple));
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50">
+  <!-- Header -->
+  <header class="grad text-white p-6 shadow-md">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <h1 class="text-2xl md:text-3x;l font-extrabold drop-shadow">ระบบห้องสมุดโรงเรียน</h1>
+      <span class="text-xs md:text-sm opacity-90">เวอร์ชัน JSONP + QR (เฉพาะกล้องหลัง)</span>
+    </div>
+  </header>  <main class="max-w-5xl mx-auto p-4 md:p-6 space-y-6">
+    <!-- Nav -->
+    <nav class="bg-white rounded-2xl shadow p-2 flex flex-wrap gap-2">
+      <button data-tab="loan" class="tab-btn px-4 py-2 rounded-xl bg-emerald-100 text-emerald-900 font-semibold">ยืม-คืน</button>
+      <button data-tab="add"  class="tab-btn px-4 py-2 rounded-xl hover:bg-blue-100">เพิ่มหนังสือ</button>
+      <button data-tab="gate" class="tab-btn px-4 py-2 rounded-xl hover:bg-violet-100">เข้า-ออก</button>
+      <button data-tab="assistant" class="tab-btn px-4 py-2 rounded-xl hover:bg-emerald-100">ผู้ช่วยบรรณารักษ์</button>
+      <button data-tab="stats" class="tab-btn ml-auto px-4 py-2 rounded-xl bg-slate-100">สถิติ</button>
+    </nav><!-- Panels -->
+<section id="loan" class="tab-panel bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
+  <h2 class="text-xl font-bold text-emerald-700">ฟังก์ชันยืม-คืน</h2>
+  <p class="text-sm text-slate-600">สแกนคิวอาร์โค้ดบนหนังสือ (กล้องหลัง) เพื่อกรอกข้อมูลอัตโนมัติ หรือกรอกเอง</p>
+
+  <!-- QR Scan Area -->
+  <div class="grid md:grid-cols-2 gap-4">
+    <div class="space-y-2">
+      <label class="font-semibold">สแกนคิวอาร์โค้ด (กล้องหลังเท่านั้น)</label>
+      <div id="qr-region" class="rounded-xl border bg-slate-100 aspect-video flex items-center justify-center"></div>
+      <div class="flex gap-2">
+        <button id="btnStartQR" class="px-4 py-2 rounded-xl bg-emerald-600 text-white">เริ่มเปิดกล้อง</button>
+        <button id="btnStopQR" class="px-4 py-2 rounded-xl bg-red-500 text-white">ปิดกล้อง</button>
+      </div>
+      <p class="text-xs text-slate-500">เมื่อสแกนได้ ระบบจะดึงข้อมูลจากชีต “รายชื่อหนังสือ” มาเติมให้อัตโนมัติ</p>
+    </div>
+
+    <!-- Loan/Return Form -->
+    <form id="loanForm" class="space-y-3">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm">เลขประจำตัวนักเรียน (0001–9999)</label>
+          <input required minlength="4" maxlength="4" pattern="[0-9]{4}" name="studentId" class="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-400" placeholder="เช่น 0123" />
+        </div>
+        <div>
+          <label class="text-sm">ชื่อนักเรียน</label>
+          <input required name="studentName" class="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-400" placeholder="ชื่อ-สกุล" />
+        </div>
+      </div>
+      <div>
+        <label class="text-sm">ชื่อหนังสือ</label>
+        <input required name="title" class="w-full px-3 py-2 rounded-xl border focus:outline-none focus:ring-2 focus:ring-emerald-400" placeholder="จะถูกกรอกอัตโนมัติจากคิวอาร์" />
+      </div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div>
+          <label class="text-sm">ผู้แต่ง</label>
+          <input required name="author" class="w-full px-3 py-2 rounded-xl border" />
+        </div>
+        <div>
+          <label class="text-sm">หมวดหมู่ดิวอี้</label>
+          <select required name="dewey" id="deweyLoan" class="w-full px-3 py-2 rounded-xl border"></select>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-3">
+        <div>
+          <label class="text-sm">สำนักพิมพ์</label>
+          <input required name="publisher" class="w-full px-3 py-2 rounded-xl border" />
+        </div>
+        <div>
+          <label class="text-sm">ปีที่พิมพ์</label>
+          <input required name="year" class="w-full px-3 py-2 rounded-xl border" inputmode="numeric" pattern="[0-9]{4}" placeholder="เช่น 2022" />
+        </div>
+        <div>
+          <label class="text-sm">รหัสหนังสือ</label>
+          <input required name="bookCode" id="bookCodeLoan" class="w-full px-3 py-2 rounded-xl border" placeholder="จะถูกกรอกอัตโนมัติจากคิวอาร์" />
+        </div>
+      </div>
+      <div>
+        <label class="text-sm">ประเภทการทำรายการ</label>
+        <select required name="type" class="w-full px-3 py-2 rounded-xl border">
+          <option value="ยืม">ยืม</option>
+          <option value="คืน">คืน</option>
+        </select>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-semibold" type="submit">บันทึกยืม/คืน</button>
+        <button class="px-5 py-2 rounded-xl bg-slate-200" type="reset">ล้างฟอร์ม</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<section id="add" class="tab-panel hidden bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
+  <h2 class="text-xl font-bold text-blue-700">เพิ่มหนังสือ (ลงชีต “รายชื่อหนังสือ”)</h2>
+  <form id="addForm" class="space-y-3">
+    <div>
+      <label class="text-sm">ชื่อหนังสือ</label>
+      <input required name="title" class="w-full px-3 py-2 rounded-xl border" />
+    </div>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div>
+        <label class="text-sm">ผู้แต่ง</label>
+        <input required name="author" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+      <div>
+        <label class="text-sm">หมวดหมู่ดิวอี้</label>
+        <select required name="dewey" id="deweyAdd" class="w-full px-3 py-2 rounded-xl border"></select>
+      </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-3">
+      <div>
+        <label class="text-sm">สำนักพิมพ์</label>
+        <input required name="publisher" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+      <div>
+        <label class="text-sm">ปีที่พิมพ์</label>
+        <input required name="year" inputmode="numeric" pattern="[0-9]{4}" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+      <div>
+        <label class="text-sm">รหัสหนังสือ (กำหนดเอง/สติ๊กเกอร์คิวอาร์จะใช้ค่านี้)</label>
+        <input required name="bookCode" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+    </div>
+    <div class="flex gap-2">
+      <button class="px-5 py-2 rounded-xl bg-blue-600 text-white font-semibold" type="submit">บันทึกหนังสือ</button>
+      <button class="px-5 py-2 rounded-xl bg-slate-200" type="reset">ล้างฟอร์ม</button>
+    </div>
+  </form>
+</section>
+
+<section id="gate" class="tab-panel hidden bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
+  <h2 class="text-xl font-bold text-violet-700">บันทึกเข้า-ออกห้องสมุด</h2>
+  <form id="gateForm" class="space-y-3">
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="text-sm">เลขประจำตัวนักเรียน (0001–9999)</label>
+        <input required minlength="4" maxlength="4" pattern="[0-9]{4}" name="studentId" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+      <div>
+        <label class="text-sm">ชื่อนักเรียน</label>
+        <input required name="studentName" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+    </div>
+    <div>
+      <label class="text-sm">ประเภท</label>
+      <select required name="type" class="w-full px-3 py-2 rounded-xl border">
+        <option value="เข้า">เข้า</option>
+        <option value="ออก">ออก</option>
+      </select>
+    </div>
+    <button class="px-5 py-2 rounded-xl bg-violet-600 text-white font-semibold" type="submit">บันทึกเข้า/ออก</button>
+  </form>
+</section>
+
+<section id="assistant" class="tab-panel hidden bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
+  <h2 class="text-xl font-bold text-emerald-700">ผู้ช่วยบรรณารักษ์</h2>
+  <p class="text-sm text-slate-600">สำหรับ ป.1–ป.6 เลือกงานที่ทำและบันทึกได้</p>
+  <form id="assistantForm" class="space-y-3">
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <label class="text-sm">เลขประจำตัวนักเรียน</label>
+        <input required minlength="4" maxlength="4" pattern="[0-9]{4}" name="studentId" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+      <div>
+        <label class="text-sm">ชื่อนักเรียน</label>
+        <input required name="studentName" class="w-full px-3 py-2 rounded-xl border" />
+      </div>
+    </div>
+    <div>
+      <label class="text-sm">งานที่ทำ</label>
+      <div class="grid sm:grid-cols-2 gap-2">
+        <!-- งานผู้ช่วย -->
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="กวาดพื้น"> กวาดพื้น</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="ถูพื้น"> ถูพื้น</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="จัดเก็บหนังสือ"> จัดเก็บหนังสือ</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="เช็ดโต๊ะ"> เช็ดโต๊ะ</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="บริการการยืม-คืน"> บริการการยืม-คืน</label>
+        <label class="flex items-center gap-2"><input type="checkbox" name="tasks" value="เช็ดชั้นหนังสือ"> เช็ดชั้นหนังสือ</label>
+      </div>
+    </div>
+    <button class="px-5 py-2 rounded-xl bg-emerald-600 text-white font-semibold" type="submit">บันทึกงานผู้ช่วย</button>
+  </form>
+</section>
+
+<section id="stats" class="tab-panel hidden bg-white rounded-2xl shadow p-4 md:p-6 space-y-4">
+  <h2 class="text-xl font-bold text-slate-800">สถิติการยืม-คืน</h2>
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="p-4 rounded-2xl bg-emerald-50 border"><div class="text-sm text-emerald-700">จำนวนการยืม</div><div id="statBorrow" class="text-3xl font-extrabold">-</div></div>
+    <div class="p-4 rounded-2xl bg-blue-50 border"><div class="text-sm text-blue-700">จำนวนการคืน</div><div id="statReturn" class="text-3xl font-extrabold">-</div></div>
+    <div class="p-4 rounded-2xl bg-violet-50 border"><div class="text-sm text-violet-700">รายการล่าสุด</div><div id="statRecent" class="text-sm">-</div></div>
+  </div>
+  <button id="btnRefreshStats" class="px-4 py-2 rounded-xl bg-slate-800 text-white">รีเฟรชสถิติ</button>
+</section>
+
+  </main>  <footer class="max-w-5xl mx-auto p-6 text-center text-xs text-slate-500">เชื่อมต่อ Google Apps Script แบบ JSONP | Spreadsheet เดียวกันทุกฟังก์ชัน</footer><script>
+// ================== CONFIG ==================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec';
+const SHEET_BORROW = 'ยืม-คืน'
+const SHEET_BOOKS  = 'รายชื่อหนังสือ';
+const SHEET_GATE   = 'เข้า-ออก';
+const SHEET_ASSIST = 'ผู้ช่วย';
+
+// ดิวอี้ยอดนิยม (แก้ไข/เพิ่มได้)
+const DEWEY = [
+  ['000','คอมพิวเตอร์ ความรู้ทั่วไป'],
+  ['100','ปรัชญา จิตวิทยา'],
+  ['200','ศาสนา'],
+  ['300','สังคมศาสตร์'],
+  ['400','ภาษา'],
+  ['500','วิทยาศาสตร์'],
+  ['600','เทคโนโลยี'],
+  ['700','ศิลปะ กีฬา'],
+  ['800','วรรณคดี'],
+  ['900','ประวัติศาสตร์ ภูมิศาสตร์']
+];
+
+function fillDewey(select){
+  select.innerHTML = '<option value="">— เลือกหมวดหมู่ดิวอี้ —</option>' +
+    DEWEY.map(([code,label])=>`<option value="${code} ${label}">${code} — ${label}</option>`).join('');
+}
+fillDewey(document.getElementById('deweyLoan'));
+fillDewey(document.getElementById('deweyAdd'));
+
+// ================== TAB HANDLER ==================
+const tabBtns = document.querySelectorAll('.tab-btn');
+const panels = document.querySelectorAll('.tab-panel');
+function showTab(id){
+  panels.forEach(p=>p.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  tabBtns.forEach(b=>b.classList.remove('bg-emerald-100','bg-blue-100','bg-violet-100'));
+}
+
+tabBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>showTab(btn.dataset.tab));
+});
+
+// ================== JSONP HELPER ==================
+function jsonp(params){
+  return new Promise((resolve,reject)=>{
+    const cbName = 'cb_' + Math.random().toString(36).slice(2);
+    window[cbName] = (data)=>{ resolve(data); cleanup(); };
+    const query = new URLSearchParams({...params, callback: cbName}).toString();
+    const s = document.createElement('script');
+    s.src = `${SCRIPT_URL}?${query}`;
+    s.onerror = ()=>{ reject(new Error('JSONP error')); cleanup(); };
+    document.body.appendChild(s);
+    function cleanup(){ delete window[cbName]; s.remove(); }
+  });
+}
+
+// ================== SWEET ALERT HELPERS ==================
+function toastLoading(title='กำลังบันทึก...'){
+  Swal.fire({title, didOpen:()=>Swal.showLoading(), allowOutsideClick:false, allowEscapeKey:false, showConfirmButton:false});
+}
+function toastSuccess(msg='บันทึกสำเร็จ'){
+  Swal.fire({icon:'success', title:msg, timer:1600, showConfirmButton:false});
+}
+function toastError(msg='เกิดข้อผิดพลาด'){
+  Swal.fire({icon:'error', title:msg});
+}
+
+// ================== QR SCANNER (rear camera only) ==================
+let html5QrCode = null;
+async function startQR(){
+  try{
+    // ขอสิทธิ์กล้องหลัง
+    const devices = await Html5Qrcode.getCameras();
+    let backId = devices.find(d=>/back|rear|environment/i.test(d.label))?.id || devices[0]?.id;
+    if(!backId){ throw new Error('ไม่พบอุปกรณ์กล้อง'); }
+
+    html5QrCode = new Html5Qrcode('qr-region');
+    await html5QrCode.start(
+      { deviceId: { exact: backId } },
+      { fps: 10, qrbox: { width: 240, height: 240 } },
+      onScanSuccess,
+      (err)=>{} // ignore scan failure
+    );
+  }catch(e){ toastError(e.message || 'เปิดกล้องไม่สำเร็จ'); }
+}
+async function stopQR(){
+  if(html5QrCode){ await html5QrCode.stop(); html5QrCode.clear(); html5QrCode = null; }
+}
+
+async function onScanSuccess(decodedText){
+  // คาดหวังให้คิวอาร์เก็บ "รหัสหนังสือ" (คอลัมน์ G)
+  document.querySelector('#bookCodeLoan').value = decodedText.trim();
+  // ดึงข้อมูลหนังสือจากชีต “รายชื่อหนังสือ” ด้วย JSONP
+  try{
+    const res = await jsonp({ action:'getBookByCode', sheet:SHEET_BOOKS, code: decodedText.trim() });
+    if(res && res.ok && res.book){
+      const { title, author, dewey, publisher, year, bookCode } = res.book;
+      const f = document.getElementById('loanForm');
+      f.title.value = title || '';
+      f.author.value = author || '';
+      // ถ้า dewey ไม่อยู่ในรายการ จะเติมลงช่อง select โดยตรง
+      const sel = document.getElementById('deweyLoan');
+      const opt = [...sel.options].find(o=>o.value===dewey);
+      if(opt){ sel.value = dewey; } else { sel.insertAdjacentHTML('beforeend', `<option value="${dewey}" selected>${dewey}</option>`); }
+      f.publisher.value = publisher || '';
+      f.year.value = year || '';
+      f.bookCode.value = bookCode || decodedText.trim();
+      toastSuccess('สแกนสำเร็จ เติมข้อมูลแล้ว');
+    }else{
+      toastError(res?.message || 'ไม่พบหนังสือในชีต รายชื่อหนังสือ');
+    }
+  }catch(e){ toastError('อ่านข้อมูลหนังสือไม่สำเร็จ'); }
+}
+
+document.getElementById('btnStartQR').addEventListener('click', startQR);
+document.getElementById('btnStopQR').addEventListener('click', stopQR);
+
+// ================== FORMS SUBMIT ==================
+// ยืม-คืน (ลงชีต "ยืม-คืน")
+document.getElementById('loanForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    action:'addBorrowReturn', sheet:SHEET_BORROW,
+    studentId:f.studentId.value.trim(),
+    studentName:f.studentName.value.trim(),
+    title:f.title.value.trim(),
+    author:f.author.value.trim(),
+    dewey:f.dewey.value.trim(),
+    publisher:f.publisher.value.trim(),
+    year:f.year.value.trim(),
+    bookCode:f.bookCode.value.trim(),
+    type:f.type.value
+  };
+  toastLoading();
+  try{
+    const res = await jsonp(payload);
+    if(res?.ok){ toastSuccess(); f.reset(); } else { toastError(res?.message||'บันทึกไม่สำเร็จ'); }
+  }catch(err){ toastError('การเชื่อมต่อผิดพลาด'); }
+});
+
+// เพิ่มหนังสือ (ลงชีต "รายชื่อหนังสือ")
+document.getElementById('addForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    action:'addBook', sheet:SHEET_BOOKS,
+    title:f.title.value.trim(),
+    author:f.author.value.trim(),
+    dewey:f.dewey.value.trim(),
+    publisher:f.publisher.value.trim(),
+    year:f.year.value.trim(),
+    bookCode:f.bookCode.value.trim()
+  };
+  toastLoading('กำลังบันทึกหนังสือ...');
+  try{
+    const res = await jsonp(payload);
+    if(res?.ok){ toastSuccess('เพิ่มหนังสือสำเร็จ'); f.reset(); }
+    else { toastError(res?.message||'บันทึกไม่สำเร็จ'); }
+  }catch(err){ toastError('การเชื่อมต่อผิดพลาด'); }
+});
+
+// เข้า-ออก (ลงชีต "เข้า-ออก")
+document.getElementById('gateForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    action:'addGate', sheet:SHEET_GATE,
+    studentId:f.studentId.value.trim(),
+    studentName:f.studentName.value.trim(),
+    type:f.type.value
+  };
+  toastLoading('กำลังบันทึกเข้า/ออก...');
+  try{
+    const res = await jsonp(payload);
+    if(res?.ok){ toastSuccess('บันทึกสำเร็จ'); f.reset(); }
+    else { toastError(res?.message||'บันทึกไม่สำเร็จ'); }
+  }catch(err){ toastError('การเชื่อมต่อผิดพลาด'); }
+});
+
+// ผู้ช่วยบรรณารักษ์ (ลงชีต "ผู้ช่วย")
+document.getElementById('assistantForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const f = e.target;
+  const tasks = [...f.querySelectorAll('input[name="tasks"]:checked')].map(i=>i.value);
+  const payload = {
+    action:'addAssistant', sheet:SHEET_ASSIST,
+    studentId:f.studentId.value.trim(),
+    studentName:f.studentName.value.trim(),
+    tasks: tasks.join(', ')
+  };
+  if(tasks.length===0){ return toastError('กรุณาเลือกงานอย่างน้อย 1 งาน'); }
+  toastLoading('กำลังบันทึกงานผู้ช่วย...');
+  try{
+    const res = await jsonp(payload);
+    if(res?.ok){ toastSuccess('บันทึกสำเร็จ'); f.reset(); }
+    else { toastError(res?.message||'บันทึกไม่สำเร็จ'); }
+  }catch(err){ toastError('การเชื่อมต่อผิดพลาด'); }
+});
+
+// ================== สถิติ ==================
+async function refreshStats(){
+  try{
+    const res = await jsonp({ action:'getStats', sheet:SHEET_BORROW });
+    if(!res?.ok) throw new Error('ดึงสถิติไม่สำเร็จ');
+    document.getElementById('statBorrow').textContent = res.borrow||0;
+    document.getElementById('statReturn').textContent = res.return||0;
+    document.getElementById('statRecent').innerHTML = (res.recent||[]).map(r=>`<div>• ${r}</div>`).join('') || '-';
+  }catch(e){ toastError(e.message); }
+}
+
+document.getElementById('btnRefreshStats').addEventListener('click', refreshStats);
+// เปิดหน้าด้วยแท็บยืม-คืน และโหลดสถิติครั้งแรก
+showTab('loan');
+refreshStats();
+</script></body>
+</html>
