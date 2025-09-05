@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="th">
+<!DOCTYPE html>
+<html lang="th">
 <head>
   <meta charset="UTF-8">
   <title>ห้องสมุดโรงเรียน</title>
@@ -9,105 +10,108 @@
 </head>
 <body class="bg-gradient-to-r from-green-200 via-blue-200 to-purple-200 min-h-screen p-6">
   <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-xl p-6">
-    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">📚 ระบบห้องสมุดโรงเรียน</h1><div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-  <button onclick="showSection('borrowReturn')" class="p-4 bg-green-500 text-white rounded-xl shadow hover:bg-green-600">ยืม-คืน หนังสือ</button>
-  <button onclick="showSection('addBook')" class="p-4 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600">เพิ่มหนังสือ</button>
-  <button onclick="showSection('entryExit')" class="p-4 bg-purple-500 text-white rounded-xl shadow hover:bg-purple-600">บันทึกเข้า-ออก ห้องสมุด</button>
-  <button onclick="showSection('assistant')" class="p-4 bg-pink-500 text-white rounded-xl shadow hover:bg-pink-600">ผู้ช่วยบรรณารักษ์</button>
-</div>
+    <h1 class="text-3xl font-bold text-center text-purple-700 mb-6">📚 ระบบห้องสมุดโรงเรียน</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <button onclick="showSection('borrowReturn')" class="p-4 bg-green-500 text-white rounded-xl shadow hover:bg-green-600">ยืม-คืน หนังสือ</button>
+      <button onclick="showSection('addBook')" class="p-4 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600">เพิ่มหนังสือ</button>
+      <button onclick="showSection('entryExit')" class="p-4 bg-purple-500 text-white rounded-xl shadow hover:bg-purple-600">บันทึกเข้า-ออก ห้องสมุด</button>
+      <button onclick="showSection('assistant')" class="p-4 bg-pink-500 text-white rounded-xl shadow hover:bg-pink-600">ผู้ช่วยบรรณารักษ์</button>
+    </div>
 
-<!-- ยืม-คืน หนังสือ -->
-<div id="borrowReturn" class="hidden mt-6">
-  <h2 class="text-2xl font-semibold text-green-700 mb-4">📖 ยืม-คืน หนังสือ</h2>
-  <div id="qr-reader" class="w-full h-64 border rounded-xl mb-4"></div>
-  <button onclick="startScanner(selectedCamera)" class="px-4 py-2 bg-indigo-500 text-white rounded-xl">เปิดกล้อง</button>
-  <button onclick="switchCamera()" class="px-4 py-2 bg-gray-500 text-white rounded-xl ml-2">สลับกล้อง</button>
-  <form id="borrowReturnForm" class="mt-4 space-y-2">
-    <input id="studentId" placeholder="เลขประจำตัวนักเรียน" class="w-full p-2 border rounded" required>
-    <input id="studentName" placeholder="ชื่อนักเรียน" class="w-full p-2 border rounded" required>
-    <input id="bookTitle" placeholder="ชื่อหนังสือ" class="w-full p-2 border rounded" required>
-    <input id="bookAuthor" placeholder="ผู้แต่ง" class="w-full p-2 border rounded" required>
-    <select id="bookDewey" class="w-full p-2 border rounded">
-      <option value="">เลือกหมวดหมู่ดิวอี้</option>
-      <option>000 – เบ็ดเตล็ด</option>
-      <option>100 – ปรัชญา</option>
-      <option>200 – ศาสนา</option>
-      <option>300 – สังคมศาสตร์</option>
-      <option>400 – ภาษา</option>
-      <option>500 – วิทยาศาสตร์</option>
-      <option>600 – เทคโนโลยี</option>
-      <option>700 – ศิลปะและการบันเทิง</option>
-      <option>800 – วรรณคดี</option>
-      <option>900 – ประวัติศาสตร์และภูมิศาสตร์</option>
-    </select>
-    <input id="bookPublisher" placeholder="สำนักพิมพ์" class="w-full p-2 border rounded">
-    <input id="bookYear" placeholder="ปีที่พิมพ์" class="w-full p-2 border rounded">
-    <input id="bookCode" placeholder="รหัสหนังสือ" class="w-full p-2 border rounded" required>
-    <select id="transactionType" class="w-full p-2 border rounded" required>
-      <option value="ยืม">ยืม</option>
-      <option value="คืน">คืน</option>
-    </select>
-    <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-xl">บันทึก</button>
-  </form>
-</div>
+    <!-- ยืม-คืน หนังสือ -->
+    <div id="borrowReturn" class="hidden mt-6">
+      <h2 class="text-2xl font-semibold text-green-700 mb-4">📖 ยืม-คืน หนังสือ</h2>
+      <div id="qr-reader" class="w-full h-64 border rounded-xl mb-4"></div>
+      <button onclick="startScanner(selectedCamera)" class="px-4 py-2 bg-indigo-500 text-white rounded-xl">เปิดกล้อง</button>
+      <button onclick="switchCamera()" class="px-4 py-2 bg-gray-500 text-white rounded-xl ml-2">สลับกล้อง</button>
+      <form id="borrowReturnForm" class="mt-4 space-y-2">
+        <input id="studentId" placeholder="เลขประจำตัวนักเรียน" class="w-full p-2 border rounded" required>
+        <input id="studentName" placeholder="ชื่อนักเรียน" class="w-full p-2 border rounded" required>
+        <input id="bookTitle" placeholder="ชื่อหนังสือ" class="w-full p-2 border rounded" required>
+        <input id="bookAuthor" placeholder="ผู้แต่ง" class="w-full p-2 border rounded" required>
+        <select id="bookDewey" class="w-full p-2 border rounded">
+          <option value="">เลือกหมวดหมู่ดิวอี้</option>
+          <option>000 – เบ็ดเตล็ด</option>
+          <option>100 – ปรัชญา</option>
+          <option>200 – ศาสนา</option>
+          <option>300 – สังคมศาสตร์</option>
+          <option>400 – ภาษา</option>
+          <option>500 – วิทยาศาสตร์</option>
+          <option>600 – เทคโนโลยี</option>
+          <option>700 – ศิลปะและการบันเทิง</option>
+          <option>800 – วรรณคดี</option>
+          <option>900 – ประวัติศาสตร์และภูมิศาสตร์</option>
+        </select>
+        <input id="bookPublisher" placeholder="สำนักพิมพ์" class="w-full p-2 border rounded">
+        <input id="bookYear" placeholder="ปีที่พิมพ์" class="w-full p-2 border rounded">
+        <input id="bookCode" placeholder="รหัสหนังสือ" class="w-full p-2 border rounded" required>
+        <select id="transactionType" class="w-full p-2 border rounded" required>
+          <option value="ยืม">ยืม</option>
+          <option value="คืน">คืน</option>
+        </select>
+        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-xl">บันทึก</button>
+      </form>
+    </div>
 
-<!-- เพิ่มหนังสือ -->
-<div id="addBook" class="hidden mt-6">
-  <h2 class="text-2xl font-semibold text-blue-700 mb-4">➕ เพิ่มหนังสือ</h2>
-  <form id="addBookForm" class="space-y-2">
-    <input id="addTitle" placeholder="ชื่อหนังสือ" class="w-full p-2 border rounded" required>
-    <input id="addAuthor" placeholder="ผู้แต่ง" class="w-full p-2 border rounded" required>
-    <select id="addDewey" class="w-full p-2 border rounded">
-      <option value="">เลือกหมวดหมู่ดิวอี้</option>
-      <option>000 – เบ็ดเตล็ด</option>
-      <option>100 – ปรัชญา</option>
-      <option>200 – ศาสนา</option>
-      <option>300 – สังคมศาสตร์</option>
-      <option>400 – ภาษา</option>
-      <option>500 – วิทยาศาสตร์</option>
-      <option>600 – เทคโนโลยี</option>
-      <option>700 – ศิลปะและการบันเทิง</option>
-      <option>800 – วรรณคดี</option>
-      <option>900 – ประวัติศาสตร์และภูมิศาสตร์</option>
-    </select>
-    <input id="addPublisher" placeholder="สำนักพิมพ์" class="w-full p-2 border rounded">
-    <input id="addYear" placeholder="ปีที่พิมพ์" class="w-full p-2 border rounded">
-    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl">บันทึก</button>
-  </form>
-</div>
+    <!-- เพิ่มหนังสือ -->
+    <div id="addBook" class="hidden mt-6">
+      <h2 class="text-2xl font-semibold text-blue-700 mb-4">➕ เพิ่มหนังสือ</h2>
+      <form id="addBookForm" class="space-y-2">
+        <input id="addTitle" placeholder="ชื่อหนังสือ" class="w-full p-2 border rounded" required>
+        <input id="addAuthor" placeholder="ผู้แต่ง" class="w-full p-2 border rounded" required>
+        <select id="addDewey" class="w-full p-2 border rounded">
+          <option value="">เลือกหมวดหมู่ดิวอี้</option>
+          <option>000 – เบ็ดเตล็ด</option>
+          <option>100 – ปรัชญา</option>
+          <option>200 – ศาสนา</option>
+          <option>300 – สังคมศาสตร์</option>
+          <option>400 – ภาษา</option>
+          <option>500 – วิทยาศาสตร์</option>
+          <option>600 – เทคโนโลยี</option>
+          <option>700 – ศิลปะและการบันเทิง</option>
+          <option>800 – วรรณคดี</option>
+          <option>900 – ประวัติศาสตร์และภูมิศาสตร์</option>
+        </select>
+        <input id="addPublisher" placeholder="สำนักพิมพ์" class="w-full p-2 border rounded">
+        <input id="addYear" placeholder="ปีที่พิมพ์" class="w-full p-2 border rounded">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl">บันทึก</button>
+      </form>
+    </div>
 
-<!-- เข้า-ออก ห้องสมุด -->
-<div id="entryExit" class="hidden mt-6">
-  <h2 class="text-2xl font-semibold text-purple-700 mb-4">🚪 บันทึกเข้า-ออก ห้องสมุด</h2>
-  <form id="entryExitForm" class="space-y-2">
-    <input id="entryStudentId" placeholder="เลขประจำตัวนักเรียน" class="w-full p-2 border rounded" required>
-    <input id="entryStudentName" placeholder="ชื่อนักเรียน" class="w-full p-2 border rounded" required>
-    <select id="entryType" class="w-full p-2 border rounded" required>
-      <option value="เข้า">เข้า</option>
-      <option value="ออก">ออก</option>
-    </select>
-    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-xl">บันทึก</button>
-  </form>
-</div>
+    <!-- เข้า-ออก ห้องสมุด -->
+    <div id="entryExit" class="hidden mt-6">
+      <h2 class="text-2xl font-semibold text-purple-700 mb-4">🚪 บันทึกเข้า-ออก ห้องสมุด</h2>
+      <form id="entryExitForm" class="space-y-2">
+        <input id="entryStudentId" placeholder="เลขประจำตัวนักเรียน" class="w-full p-2 border rounded" required>
+        <input id="entryStudentName" placeholder="ชื่อนักเรียน" class="w-full p-2 border rounded" required>
+        <select id="entryType" class="w-full p-2 border rounded" required>
+          <option value="เข้า">เข้า</option>
+          <option value="ออก">ออก</option>
+        </select>
+        <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded-xl">บันทึก</button>
+      </form>
+    </div>
 
-<!-- ผู้ช่วยบรรณารักษ์ -->
-<div id="assistant" class="hidden mt-6">
-  <h2 class="text-2xl font-semibold text-pink-700 mb-4">🙋 ผู้ช่วยบรรณารักษ์</h2>
-  <form id="assistantForm" class="space-y-2">
-    <input id="assistantName" placeholder="ชื่อผู้ช่วย" class="w-full p-2 border rounded" required>
-    <select id="assistantTask" class="w-full p-2 border rounded" required>
-      <option>กวาดพื้น</option>
-      <option>ถูพื้น</option>
-      <option>จัดเก็บหนังสือ</option>
-      <option>เช็ดโต๊ะ</option>
-      <option>บริการการยืม-คืนหนังสือ</option>
-      <option>เช็ดชั้นหนังสือ</option>
-    </select>
-    <button type="submit" class="px-4 py-2 bg-pink-600 text-white rounded-xl">บันทึก</button>
-  </form>
-</div>
+    <!-- ผู้ช่วยบรรณารักษ์ -->
+    <div id="assistant" class="hidden mt-6">
+      <h2 class="text-2xl font-semibold text-pink-700 mb-4">🙋 ผู้ช่วยบรรณารักษ์</h2>
+      <form id="assistantForm" class="space-y-2">
+        <input id="assistantName" placeholder="ชื่อผู้ช่วย" class="w-full p-2 border rounded" required>
+        <select id="assistantTask" class="w-full p-2 border rounded" required>
+          <option>กวาดพื้น</option>
+          <option>ถูพื้น</option>
+          <option>จัดเก็บหนังสือ</option>
+          <option>เช็ดโต๊ะ</option>
+          <option>บริการการยืม-คืนหนังสือ</option>
+          <option>เช็ดชั้นหนังสือ</option>
+        </select>
+        <button type="submit" class="px-4 py-2 bg-pink-600 text-white rounded-xl">บันทึก</button>
+      </form>
+    </div>
+  </div>
 
-  </div>  <script>
+  <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec";
     let html5QrCode;
     let cameras = [];
@@ -253,5 +257,6 @@
         success: function(){ swal("สำเร็จ","บันทึกข้อมูลผู้ช่วยแล้ว","success"); }
       });
     });
-  </script></body>
+  </script>
+</body>
 </html>
