@@ -199,6 +199,22 @@ document.getElementById("addForm").addEventListener("submit", async function (e)
   }
 });
 </script>
+
+    <!-- Gate (เข้า-ออก) -->
+    <section id="gate" class="tab-panel hidden bg-white rounded-2xl shadow p-6 mt-4">
+      <h2 class="text-xl font-bold text-violet-700">บันทึกเข้า-ออก</h2>
+      <form id="gateForm" class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <input id="gateStudentId" placeholder="เลขประจำตัว (0001-9999)" pattern="[0-9]{4}" class="px-3 py-2 rounded-xl border" required />
+        <input id="gateStudentName" placeholder="ชื่อนักเรียน" class="px-3 py-2 rounded-xl border" nonrequired />
+        <select id="gateType" class="px-3 py-2 rounded-xl border">
+          <option value="เข้า">เข้า</option>
+          <option value="ออก">ออก</option>
+        </select>
+        <div class="md:col-span-3">
+          <button type="submit" class="px-4 py-2 rounded-xl bg-violet-600 text-white">บันทึกเข้า/ออก</button>
+        </div>
+      </form>
+    </section>
     
     <!-- Assistant -->
     <section id="assistant" class="tab-panel hidden bg-white rounded-2xl shadow p-6 mt-4">
@@ -236,8 +252,7 @@ document.getElementById("addForm").addEventListener("submit", async function (e)
 
   <footer class="max-w-5xl mx-auto p-4 text-center text-xs text-slate-500">เชื่อมต่อ Google Apps Script ด้วย JSONP — ต้อง Deploy Apps Script เป็น Web App</footer>
 
-<script>
-  
+<script>  
 /* ================== CONFIG ================== */
 /* เปลี่ยนเป็น URL Apps Script ของคุณถ้าแตกต่าง */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec';
