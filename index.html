@@ -209,7 +209,7 @@
     </section>
   </main>
 
-  <footer class="max-w-5xl mx-auto p-4 text-center text-xs text-slate-500">เชื่อมต่อ Google Apps Script ด้วย JSONP — ต้อง Deploy Apps Script เป็น Web App</footer>
+  <footer class="max-w-5xl mx-auto p-4 text-center text-xs text-slate-500">🧑‍💻สร้างโดยครูบุญรักษา ฉันทาวิวัฒน์</footer>
 
 <script>  
 /* ================== CONFIG ================== */
@@ -309,7 +309,7 @@ async function startScanner(index){
   try{
     await html5QrCode.start(
       { deviceId: { exact: deviceId } },
-      { fps: 10, qrbox: { width: 300, height: 200 } }, // รูปแบบเฟรม (สี่เหลี่ยมผืนผ้า)
+      { fps: 10, qrbox: { width: 150, height: 150 } }, // รูปแบบเฟรม (สี่เหลี่ยมผืนผ้า)
       (decodedText, decodedResult) => {
         // ป้องกัน trigger ซ้ำ ๆ
         if(isScanning) return;
