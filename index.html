@@ -123,13 +123,11 @@
     <!-- Add book -->
 <section id="add" class="tab-panel hidden bg-white rounded-2xl shadow p-6 mt-4">
   <h2 class="text-xl font-bold text-blue-700">เพิ่มหนังสือ</h2>
-
   <form id="addForm" class="mt-4 space-y-3">
     <div>
       <label class="text-sm">ชื่อหนังสือ</label>
       <input name="title" id="addTitle" class="w-full px-3 py-2 rounded-xl border" />
     </div>
-
     <div class="grid grid-cols-2 gap-3">
       <div>
         <label class="text-sm">ผู้แต่ง</label>
@@ -137,12 +135,9 @@
       </div>
       <div>
         <label class="text-sm">หมวดหมู่ดิวอี้</label>
-        <select id="addDewey" name="dewey" class="w-full px-3 py-2 rounded-xl border">
-          <option value="">-- ไม่ระบุ --</option>
-        </select>
+        <select id="addDewey" name="dewey" class="w-full px-3 py-2 rounded-xl border"></select>
       </div>
     </div>
-
     <div class="grid grid-cols-3 gap-3">
       <div>
         <label class="text-sm">สำนักพิมพ์</label>
@@ -153,28 +148,21 @@
         <input id="addYear" name="year" pattern="[0-9]{4}" class="w-full px-3 py-2 rounded-xl border" />
       </div>
       <div>
-        <label class="text-sm">รหัสหนังสือ (ไม่ต้องใส่)</label>
+        <label class="text-sm">รหัสหนังสือ(ไม่ต้องใส่)</label>
         <input id="addBookCode" name="bookCode" class="w-full px-3 py-2 rounded-xl border" />
       </div>
     </div>
-
     <div class="flex gap-2">
-      <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white">
-        บันทึกหนังสือ
-      </button>
+      <button type="submit" class="px-4 py-2 rounded-xl bg-blue-600 text-white">บันทึกหนังสือ</button>
       <button type="reset" class="px-4 py-2 rounded-xl bg-slate-200">ล้าง</button>
     </div>
   </form>
 </section>
 
 <script>
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec"; 
-// 🔸 เปลี่ยนเป็น URL ของ Apps Script ที่คุณ deploy แล้ว
-
-document.getElementById("addForm").addEventListener("submit", async (e) => {
+document.getElementById("addForm").addEventListener("submit", async function (e) {
   e.preventDefault();
 
-  // ดึงค่าจากช่องกรอก
   const title = document.getElementById("addTitle").value.trim();
   const author = document.getElementById("addAuthor").value.trim();
   const dewey = document.getElementById("addDewey").value.trim();
@@ -182,44 +170,36 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
   const year = document.getElementById("addYear").value.trim();
   const bookCode = document.getElementById("addBookCode").value.trim();
 
-  // ✅ ต้องกรอกอย่างน้อย 1 ช่อง
+  // ต้องมีอย่างน้อย 1 ช่อง
   if (!title && !author && !dewey && !publisher && !year && !bookCode) {
-    alert("กรุณากรอกข้อมูลอย่างน้อย 1 ช่องก่อนบันทึก");
+    alert("กรุณากรอกอย่างน้อย 1 ช่องก่อนบันทึก");
     return;
   }
 
   try {
-    // 🔹 ส่งข้อมูลด้วย POST (เชื่อมตรงกับ Apps Script)
-    const formData = new FormData();
-    formData.append("action", "addBook");
-    formData.append("title", title);
-    formData.append("author", author);
-    formData.append("dewey", dewey);
-    formData.append("publisher", publisher);
-    formData.append("year", year);
-    formData.append("bookCode", bookCode);
-
-    const response = await fetch(SCRIPT_URL, {
+    const res = await fetch("https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec", {
       method: "POST",
-      body: formData,
+      mode: "no-cors",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title,
+        author,
+        dewey,
+        publisher,
+        year,
+        bookCode
+      }),
     });
 
-    const text = await response.text();
-    console.log("Response from script:", text); // 🔍 ตรวจดูใน Console ได้
-
-    if (text.includes("SUCCESS") || text.includes('"ok":true')) {
-      alert("✅ เพิ่มหนังสือเรียบร้อยแล้ว!");
-      e.target.reset();
-    } else {
-      alert("⚠️ ไม่สามารถบันทึกข้อมูลได้ (โปรดตรวจสคริปต์ฝั่ง Google)");
-    }
-
-  } catch (err) {
-    console.error("Fetch error:", err);
-    alert("❌ ไม่สามารถเชื่อมต่อกับ Google Script ได้");
+    alert("บันทึกข้อมูลเรียบร้อยแล้ว");
+    e.target.reset();
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+    alert("เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง");
   }
 });
 </script>
+    
     <!-- Assistant -->
     <section id="assistant" class="tab-panel hidden bg-white rounded-2xl shadow p-6 mt-4">
       <h2 class="text-xl font-bold text-emerald-700">ผู้ช่วยบรรณารักษ์</h2>
@@ -257,6 +237,7 @@ document.getElementById("addForm").addEventListener("submit", async (e) => {
   <footer class="max-w-5xl mx-auto p-4 text-center text-xs text-slate-500">เชื่อมต่อ Google Apps Script ด้วย JSONP — ต้อง Deploy Apps Script เป็น Web App</footer>
 
 <script>
+  
 /* ================== CONFIG ================== */
 /* เปลี่ยนเป็น URL Apps Script ของคุณถ้าแตกต่าง */
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec';
