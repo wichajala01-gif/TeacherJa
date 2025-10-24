@@ -413,7 +413,8 @@ document.getElementById('addForm').addEventListener('submit', async (e)=>{
     dewey: document.getElementById('addDewey').value.trim(),
     publisher: document.getElementById('addPublisher').value.trim(),
     year: document.getElementById('addYear').value.trim(),
-    bookCode: document.getElementById('addBookCode').value.trim()
+    bookCode: document.getElementById('addBookCode').value.trim(),
+    callback:'callback'
   };
   Swal.fire({ title:'กำลังบันทึกหนังสือ...', didOpen: ()=> Swal.showLoading(), allowOutsideClick:false });
   try{
