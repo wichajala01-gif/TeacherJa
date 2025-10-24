@@ -168,41 +168,58 @@
 </section>
 
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbyxF13nNkv7pFU2iyYEWtZQpPU8DZvVKOgfZ6Hgw4QEVfDZ0zqRjyyb9gbjQjzGp3BA_A/exec"; // 🔸 เปลี่ยนเป็น URL ของ Apps Script จริง
+const SCRIPT_URL = "https://script.google.com/macros/s/XXXXXXXXXXXXXXX/exec"; 
+// 🔸 เปลี่ยนเป็น URL ของ Apps Script ที่คุณ deploy แล้ว
 
 document.getElementById("addForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // ดึงค่าจากฟอร์ม
-  const title = document.getElementById("addTitle").value || "";
-  const author = document.getElementById("addAuthor").value || "";
-  const dewey = document.getElementById("addDewey").value || "";
-  const publisher = document.getElementById("addPublisher").value || "";
-  const year = document.getElementById("addYear").value || "";
-  const bookCode = document.getElementById("addBookCode").value || "";
+  // ดึงค่าจากช่องกรอก
+  const title = document.getElementById("addTitle").value.trim();
+  const author = document.getElementById("addAuthor").value.trim();
+  const dewey = document.getElementById("addDewey").value.trim();
+  const publisher = document.getElementById("addPublisher").value.trim();
+  const year = document.getElementById("addYear").value.trim();
+  const bookCode = document.getElementById("addBookCode").value.trim();
 
-  // ถ้าไม่มีกรอกอะไรเลย ไม่ต้องส่ง
+  // ✅ ต้องกรอกอย่างน้อย 1 ช่อง
   if (!title && !author && !dewey && !publisher && !year && !bookCode) {
     alert("กรุณากรอกข้อมูลอย่างน้อย 1 ช่องก่อนบันทึก");
     return;
   }
 
   try {
-    const res = await fetch(`${scriptURL}?action=addBook&title=${encodeURIComponent(title)}&author=${encodeURIComponent(author)}&dewey=${encodeURIComponent(dewey)}&publisher=${encodeURIComponent(publisher)}&year=${encodeURIComponent(year)}&bookCode=${encodeURIComponent(bookCode)}`);
-    const data = await res.json();
-    if (data.ok) {
-      alert("✅ เพิ่มหนังสือเรียบร้อยแล้ว");
-      document.getElementById("addForm").reset();
+    // 🔹 ส่งข้อมูลด้วย POST (เชื่อมตรงกับ Apps Script)
+    const formData = new FormData();
+    formData.append("action", "addBook");
+    formData.append("title", title);
+    formData.append("author", author);
+    formData.append("dewey", dewey);
+    formData.append("publisher", publisher);
+    formData.append("year", year);
+    formData.append("bookCode", bookCode);
+
+    const response = await fetch(SCRIPT_URL, {
+      method: "POST",
+      body: formData,
+    });
+
+    const text = await response.text();
+    console.log("Response from script:", text); // 🔍 ตรวจดูใน Console ได้
+
+    if (text.includes("SUCCESS") || text.includes('"ok":true')) {
+      alert("✅ เพิ่มหนังสือเรียบร้อยแล้ว!");
+      e.target.reset();
     } else {
-      alert("❌ ไม่สามารถบันทึกข้อมูลได้");
+      alert("⚠️ ไม่สามารถบันทึกข้อมูลได้ (โปรดตรวจสคริปต์ฝั่ง Google)");
     }
+
   } catch (err) {
-    alert("⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อ");
-    console.error(err);
+    console.error("Fetch error:", err);
+    alert("❌ ไม่สามารถเชื่อมต่อกับ Google Script ได้");
   }
 });
 </script>
-
     <!-- Assistant -->
     <section id="assistant" class="tab-panel hidden bg-white rounded-2xl shadow p-6 mt-4">
       <h2 class="text-xl font-bold text-emerald-700">ผู้ช่วยบรรณารักษ์</h2>
