@@ -309,7 +309,7 @@ async function startScanner(index){
   try{
     await html5QrCode.start(
       { deviceId: { exact: deviceId } },
-      { fps: 10, qrbox: { width: 150, height: 150 } }, // รูปแบบเฟรม (สี่เหลี่ยมผืนผ้า)
+      { fps: 10, qrbox: { width: 300, height: 300 } }, // รูปแบบเฟรม (สี่เหลี่ยมจัตุรัส)
       (decodedText, decodedResult) => {
         // ป้องกัน trigger ซ้ำ ๆ
         if(isScanning) return;
